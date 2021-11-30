@@ -1,5 +1,6 @@
 import numpy as np
 from gwu_nn.loss_functions import MSE, LogLoss, CrossEntropy
+from gwu_nn.optimizers import SGD
 
 loss_functions = {'mse': MSE, 'log_loss': LogLoss, 'cross_entropy': CrossEntropy}
 
@@ -9,6 +10,7 @@ class GWUNetwork():
         self.layers = []
         self.loss = None
         self.loss_prime = None
+        self.optimizer = None
 
     def add(self, layer):
         if len(self.layers) > 0:
@@ -25,6 +27,7 @@ class GWUNetwork():
         self.loss = layer_loss.loss
         self.loss_prime = layer_loss.loss_partial_derivative
         self.learning_rate = lr
+        self.optimizer = SGD(self.learning_rate)
 
     # predict output for given input
     def predict(self, input_data):
@@ -67,6 +70,10 @@ class GWUNetwork():
                 error = self.loss_prime(y_true, output)
                 for layer in reversed(self.layers):
                     error = layer.backward_propagation(error, self.learning_rate)
+
+                # Optimize
+                for layer in self.layers:
+                    self.optimizer.optimize(layer)
 
             # calculate average error on all samples
             if i % 10 == 0:

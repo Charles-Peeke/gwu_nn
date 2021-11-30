@@ -58,6 +58,8 @@ class Dense(Layer):
         self.input_size = input_size
         self.output_size = output_size
         self.add_bias = add_bias
+        self.weights_error = None
+        self.output_error = None
 
 
     def init_weights(self, input_size):
@@ -102,10 +104,14 @@ class Dense(Layer):
 
         Returns:
             np.array(float): The gradient of the error up to and including this layer."""
-        input_error = np.dot(output_error, self.weights.T)
-        weights_error = np.dot(self.input.T, output_error)
+        self.output_error = output_error
+        input_error = np.dot(self.output_error, self.weights.T)
+        self.weights_error = np.dot(self.input.T, self.output_error)
 
-        self.weights -= learning_rate * weights_error
+        # This is -basic SGD Optimization-
+        '''
+        self.weights -= learning_rate * self.weights_error
         if self.add_bias:
-            self.bias -= learning_rate * output_error
+            self.bias -= learning_rate * self.output_error
+        '''
         return input_error

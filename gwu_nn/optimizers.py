@@ -7,5 +7,19 @@ class Optimizer(ABC):
         self.learning_rate = learning_rate
 
     @abstractmethod
-    def update_params(self, layer):
+    def optimize(self, layer):
         pass
+
+# SGD optimizer
+class SGD(Optimizer):
+
+    # Initialize optimizer - 
+    def __init__(self, learning_rate=1.0):
+        self.learning_rate = learning_rate
+
+    # Optimize (Update Layer Weights/Bias)
+    def optimize(self, layer):
+        layer.weights += -self.learning_rate * self.weights_error
+        if layer.add_bias:
+            layer.bias -= self.learning_rate * self.output_error
+

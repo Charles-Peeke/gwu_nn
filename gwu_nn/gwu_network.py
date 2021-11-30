@@ -72,8 +72,10 @@ class GWUNetwork():
                     error = layer.backward_propagation(error, self.learning_rate)
 
                 # Optimize
+                self.optimizer.before_optimize()
                 for layer in self.layers:
                     self.optimizer.optimize(layer)
+                self.optimizer.after_optimize()
 
             # calculate average error on all samples
             if i % 10 == 0:

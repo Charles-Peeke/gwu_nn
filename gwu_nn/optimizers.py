@@ -7,7 +7,15 @@ class Optimizer(ABC):
         self.learning_rate = learning_rate
 
     @abstractmethod
+    def before_optimize(self):
+        pass
+
+    @abstractmethod
     def optimize(self, layer):
+        pass
+
+    @abstractmethod
+    def after_optimize(self):
         pass
 
 # SGD optimizer

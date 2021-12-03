@@ -76,8 +76,7 @@ class Adagrad(Optimizer):
     # Called once before the optimize function
     def before_optimize(self):
         if self.decay:
-            self.updated_learning_rate = self.learning_rate * \
-                (1. / (1. + self.decay * self.iterations))
+            self.updated_learning_rate = self.learning_rate * (1.0 / (1.0 + self.decay * self.iterations))
 
     # Optimize (Update Layer Weights/Bias)
     def optimize(self, layer):

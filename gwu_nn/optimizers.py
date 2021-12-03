@@ -44,11 +44,11 @@ class SGD(Optimizer):
                 layer.weight_momentums = np.zeros_like(layer.weights)
                 layer.bias_momentums = np.zeros_like(layer.biases)
             
-            weight_updates = self.momentum * layer.weight_momentums - self.current_learning_rate * layer.weights_error
+            weight_updates = self.momentum * layer.weight_momentums - self.updated_learning_rate * layer.weights_error
             layer.weight_momentums = weight_updates
 
             # Build bias updates
-            bias_updates = self.momentum * layer.bias_momentums - self.current_learning_rate * layer.output_error
+            bias_updates = self.momentum * layer.bias_momentums - self.updated_learning_rate * layer.output_error
             layer.bias_momentums = bias_updates
 
         else:

@@ -99,4 +99,41 @@ class Adagrad(Optimizer):
         self.iterations += 1
 
 
+# RMSprop optimizer
+class RMSprop(Optimizer):
+
+    # Initialize optimizer
+    def __init__(self, learning_rate=0.001, decay=0.0, epsilon=1e-7, beta=0.9):
+        self.learning_rate = learning_rate
+        self.updated_learning_rate = learning_rate
+        self.decay = decay
+        self.iterations = 0
+        self.epsilon = epsilon
+        self.beta = beta
+
+    # Call once before any parameter updates
+    def before_optimize(self):
+        if self.decay:
+            self.updated_learning_rate = self.learning_rate * (1.0 / (1.0 + self.decay * self.iterations))
+
+    # Update parameters
+    def optimize(self, layer):
+
+        # Create caches if not already present
+        if not hasattr(layer, 'weight_cache'):
+            layer.weight_cache = np.zeros_like(layer.weights)
+            layer.bias_cache = np.zeros_like(layer.bias)
+
+        # Update the layer caches
+        layer.weight_cache = self.beta * layer.weight_cache + (1 - self.beta) * layer.weights_error**2
+        layer.bias_cache = self.beta * layer.bias_cache + (1 - self.beta) * layer.output_error**2
+
+        # Parameter updates (Modified SGD)
+        layer.weights += -self.updated_learning_rate * layer.weights_error / (np.sqrt(layer.weight_cache) + self.epsilon)
+        layer.bias += -self.updated_learning_rate * layer.output_error / (np.sqrt(layer.bias_cache) + self.epsilon)
+
+    # Called once after optimize function
+    def after_optimize(self):
+        self.iterations += 1
+
 

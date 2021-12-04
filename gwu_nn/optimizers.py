@@ -140,14 +140,14 @@ class RMSprop(Optimizer):
 class Adam(Optimizer):
 
     # Initialize optimizer - set settings
-    def __init__(self, learning_rate=0.001, decay=0.0, epsilon=1e-7, beta_momentum=0.9, beta_bias=0.999):
+    def __init__(self, learning_rate=0.001, decay=0.0, epsilon=1e-7, beta_momentum=0.9, beta_cache=0.999):
         self.learning_rate = learning_rate
         self.current_learning_rate = learning_rate
         self.decay = decay
         self.iterations = 0
         self.epsilon = epsilon
         self.beta_momentum = beta_momentum
-        self.beta_bias = beta_bias
+        self.beta_cache = beta_cache
 
     # Call once before any parameter updates
     def before_optimize(self):
@@ -174,12 +174,12 @@ class Adam(Optimizer):
         bias_momentums_calculated = layer.bias_momentums / (1 - self.beta_momentum ** (self.iterations + 1))
         
         # Update caches
-        layer.weight_cache = self.beta_bias * layer.weight_cache + (1 - self.beta_bias) * layer.weights_error**2
-        layer.bias_cache = self.beta_bias * layer.bias_cache + (1 - self.beta_bias) * layer.output_error**2
+        layer.weight_cache = self.beta_cache * layer.weight_cache + (1 - self.beta_cache) * layer.weights_error**2
+        layer.bias_cache = self.beta_cache * layer.bias_cache + (1 - self.beta_cache) * layer.output_error**2
         
         # Calculate Updated Caches
-        weight_cache_calculated = layer.weight_cache / (1 - self.beta_bias ** (self.iterations + 1))
-        bias_cache_calculated = layer.bias_cache / (1 - self.beta_bias ** (self.iterations + 1))
+        weight_cache_calculated = layer.weight_cache / (1 - self.beta_cache ** (self.iterations + 1))
+        bias_cache_calculated = layer.bias_cache / (1 - self.beta_cache ** (self.iterations + 1))
 
         # Parameter updates (Modified SGD)
         layer.weights -= self.current_learning_rate * weight_momentums_calculated / (np.sqrt(weight_cache_calculated) + self.epsilon)

@@ -53,7 +53,7 @@ class SGD(Optimizer):
 
         else:
                 
-            layer.weights += -self.updated_learning_rate * layer.weights_error
+            layer.weights -= self.updated_learning_rate * layer.weights_error
             if layer.add_bias:
                 layer.bias -= self.updated_learning_rate * layer.output_error
 
@@ -91,8 +91,8 @@ class Adagrad(Optimizer):
         layer.bias_cache += layer.output_error**2
 
         # Parameter updates (Modified SGD)
-        layer.weights += -self.updated_learning_rate * layer.weights_error / (np.sqrt(layer.weight_cache) + self.epsilon)
-        layer.bias += -self.updated_learning_rate * layer.output_error / (np.sqrt(layer.bias_cache) + self.epsilon)
+        layer.weights -= self.updated_learning_rate * layer.weights_error / (np.sqrt(layer.weight_cache) + self.epsilon)
+        layer.bias -= self.updated_learning_rate * layer.output_error / (np.sqrt(layer.bias_cache) + self.epsilon)
 
     # Called once after optimize function
     def after_optimize(self):
@@ -129,8 +129,8 @@ class RMSprop(Optimizer):
         layer.bias_cache = self.beta * layer.bias_cache + (1 - self.beta) * layer.output_error**2
 
         # Parameter updates (Modified SGD)
-        layer.weights += -self.updated_learning_rate * layer.weights_error / (np.sqrt(layer.weight_cache) + self.epsilon)
-        layer.bias += -self.updated_learning_rate * layer.output_error / (np.sqrt(layer.bias_cache) + self.epsilon)
+        layer.weights -= self.updated_learning_rate * layer.weights_error / (np.sqrt(layer.weight_cache) + self.epsilon)
+        layer.bias -= self.updated_learning_rate * layer.output_error / (np.sqrt(layer.bias_cache) + self.epsilon)
 
     # Called once after optimize function
     def after_optimize(self):
@@ -182,8 +182,8 @@ class Adam(Optimizer):
         bias_cache_calculated = layer.bias_cache / (1 - self.beta_bias ** (self.iterations + 1))
 
         # Parameter updates (Modified SGD)
-        layer.weights += -self.current_learning_rate * weight_momentums_calculated / (np.sqrt(weight_cache_calculated) + self.epsilon)
-        layer.biases += -self.current_learning_rate * bias_momentums_calculated / (np.sqrt(bias_cache_calculated) + self.epsilon)
+        layer.weights -= self.current_learning_rate * weight_momentums_calculated / (np.sqrt(weight_cache_calculated) + self.epsilon)
+        layer.biases -= self.current_learning_rate * bias_momentums_calculated / (np.sqrt(bias_cache_calculated) + self.epsilon)
 
     # Called once after optimize function
     def after_optimize(self):

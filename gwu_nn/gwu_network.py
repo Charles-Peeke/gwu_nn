@@ -22,12 +22,15 @@ class GWUNetwork():
     def get_weights(self):
         pass
 
-    def compile(self, loss, lr, optimizer=SGD):
+    def compile(self, loss, lr, optimizer=None):
         layer_loss = loss_functions[loss]
         self.loss = layer_loss.loss
         self.loss_prime = layer_loss.loss_partial_derivative
         self.learning_rate = lr
-        self.optimizer = optimizer(self.learning_rate)
+        if optimizer is None:
+            self.optimizer = SGD(self.learning_rate)
+        else:
+            self.optimizer = optimizer
 
     # predict output for given input
     def predict(self, input_data):

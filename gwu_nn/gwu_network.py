@@ -1,8 +1,9 @@
 import numpy as np
 from gwu_nn.loss_functions import MSE, LogLoss, CrossEntropy
-from gwu_nn.optimizers import SGD
+from gwu_nn.optimizers import SGD, Adagrad, RMSprop, Adam
 
 loss_functions = {'mse': MSE, 'log_loss': LogLoss, 'cross_entropy': CrossEntropy}
+optimizers = {'sgd': SGD, 'adagrad': Adagrad, 'rmsprop': RMSprop, 'adam' : Adam}
 
 class GWUNetwork():
 
@@ -28,7 +29,9 @@ class GWUNetwork():
         self.loss_prime = layer_loss.loss_partial_derivative
         self.learning_rate = lr
         if optimizer is None:
-            self.optimizer = SGD(self.learning_rate)
+            self.optimizer = SGD(learning_rate = lr)
+        elif isinstance(optimizer, str):
+            self.optimizer = optimizers[optimizer](learning_rate=lr)
         else:
             self.optimizer = optimizer
 

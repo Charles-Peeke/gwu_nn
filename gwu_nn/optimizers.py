@@ -22,6 +22,7 @@ class Optimizer(ABC):
 class SGD(Optimizer):
 
     # Initialize optimizer - 
+    @classmethod
     def __init__(self, learning_rate=1.0, decay=0.0, momentum=0.0):
         self.learning_rate = learning_rate
         self.updated_learning_rate = learning_rate
@@ -30,11 +31,13 @@ class SGD(Optimizer):
         self.momentum = momentum
     
     # Called once before the optimize function
+    @classmethod
     def before_optimize(self):
         if self.decay:
-            self.updated_learning_rate = self.learning_rate * (1.0 / (1.0 + (self.decay * self.iterations)))
+            self.updated_learning_rate = self.learning_rate * (1.0 / (1.0 + self.decay * self.iterations))
 
     # Optimize (Update Layer Weights/Bias)
+    @classmethod
     def optimize(self, layer):
 
         if self.momentum:
@@ -42,7 +45,7 @@ class SGD(Optimizer):
             # Create momentums if not already present
             if not hasattr(layer, 'weight_momentums'):
                 layer.weight_momentums = np.zeros_like(layer.weights)
-                layer.bias_momentums = np.zeros_like(layer.biases)
+                layer.bias_momentums = np.zeros_like(layer.bias)
             
             weight_updates = self.momentum * layer.weight_momentums - self.updated_learning_rate * layer.weights_error
             layer.weight_momentums = weight_updates
@@ -58,6 +61,7 @@ class SGD(Optimizer):
                 layer.bias -= self.updated_learning_rate * layer.output_error
 
     # Called once after optimize function
+    @classmethod
     def after_optimize(self):
         self.iterations += 1
 
@@ -66,6 +70,7 @@ class SGD(Optimizer):
 class Adagrad(Optimizer):
 
     # Initialize optimizer
+    @classmethod
     def __init__(self, learning_rate=1.0, decay=0.0, epsilon=1e-5):
         self.learning_rate = learning_rate
         self.updated_learning_rate = learning_rate
@@ -74,11 +79,13 @@ class Adagrad(Optimizer):
         self.epsilon = epsilon
 
     # Called once before the optimize function
+    @classmethod
     def before_optimize(self):
         if self.decay:
             self.updated_learning_rate = self.learning_rate * (1.0 / (1.0 + self.decay * self.iterations))
 
     # Optimize (Update Layer Weights/Bias)
+    @classmethod
     def optimize(self, layer):
 
         # Create caches if not already present
@@ -95,6 +102,7 @@ class Adagrad(Optimizer):
         layer.bias -= self.updated_learning_rate * layer.output_error / (np.sqrt(layer.bias_cache) + self.epsilon)
 
     # Called once after optimize function
+    @classmethod
     def after_optimize(self):
         self.iterations += 1
 
@@ -103,6 +111,7 @@ class Adagrad(Optimizer):
 class RMSprop(Optimizer):
 
     # Initialize optimizer
+    @classmethod
     def __init__(self, learning_rate=0.001, decay=0.0, epsilon=1e-7, beta=0.9):
         self.learning_rate = learning_rate
         self.updated_learning_rate = learning_rate
@@ -112,11 +121,13 @@ class RMSprop(Optimizer):
         self.beta = beta
 
     # Call once before any parameter updates
+    @classmethod
     def before_optimize(self):
         if self.decay:
             self.updated_learning_rate = self.learning_rate * (1.0 / (1.0 + self.decay * self.iterations))
 
     # Update parameters
+    @classmethod
     def optimize(self, layer):
 
         # Create caches if not already present
@@ -133,6 +144,7 @@ class RMSprop(Optimizer):
         layer.bias -= self.updated_learning_rate * layer.output_error / (np.sqrt(layer.bias_cache) + self.epsilon)
 
     # Called once after optimize function
+    @classmethod
     def after_optimize(self):
         self.iterations += 1
 
@@ -140,6 +152,7 @@ class RMSprop(Optimizer):
 class Adam(Optimizer):
 
     # Initialize optimizer - set settings
+    @classmethod
     def __init__(self, learning_rate=0.001, decay=0.0, epsilon=1e-7, beta_momentum=0.9, beta_cache=0.999):
         self.learning_rate = learning_rate
         self.current_learning_rate = learning_rate
@@ -150,13 +163,14 @@ class Adam(Optimizer):
         self.beta_cache = beta_cache
 
     # Call once before any parameter updates
+    @classmethod
     def before_optimize(self):
         if self.decay:
-            self.current_learning_rate = self.learning_rate * \
-                (1. / (1. + self.decay * self.iterations))
+            self.updated_learning_rate = self.learning_rate * (1.0 / (1.0 + self.decay * self.iterations))
 
     # Update parameters
-    def optimze(self, layer):
+    @classmethod
+    def optimize(self, layer):
 
         # Create caches if not already present
         if not hasattr(layer, 'weight_cache'):
@@ -183,9 +197,10 @@ class Adam(Optimizer):
 
         # Parameter updates (Modified SGD)
         layer.weights -= self.current_learning_rate * weight_momentums_calculated / (np.sqrt(weight_cache_calculated) + self.epsilon)
-        layer.biases -= self.current_learning_rate * bias_momentums_calculated / (np.sqrt(bias_cache_calculated) + self.epsilon)
+        layer.bias -= self.current_learning_rate * bias_momentums_calculated / (np.sqrt(bias_cache_calculated) + self.epsilon)
 
     # Called once after optimize function
+    @classmethod
     def after_optimize(self):
         self.iterations += 1
 

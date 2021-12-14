@@ -3,6 +3,7 @@ This repository contains a neural network library built from scratch for use in 
 The George Washington University. It is a basic implementation that provides a number of layers, activation
 functions, and loss functions for students to explore how networks work at a low level.
 
+## [Presentation](https://docs.google.com/presentation/d/1fNGTJZuhLo-aVfG8b1N-oKhdmoQlpWOEGMhgxOXunHQ/edit?usp=sharing)
 
 ## Optimizers
 
